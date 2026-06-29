@@ -44,13 +44,14 @@ export const signupController = async (req, res) => {
       image,
     });
 
-    generateTokenAndSetCookie(newUser._id, res);
+    const token = generateTokenAndSetCookie(newUser._id, res);
 
     await newUser.save();
 
     res.status(201).json({
       succcess: true,
       user: { ...newUser._doc, password: undefined },
+      token,
     });
   } catch (error) {
     console.log('Error at signupController', error.message);
@@ -82,10 +83,11 @@ export const loginController = async (req, res) => {
         message: 'Invalid credentials',
       });
     }
-    generateTokenAndSetCookie(user._id, res);
+    const token = generateTokenAndSetCookie(user._id, res);
     res.status(200).json({
       succcess: true,
       user: { ...user._doc, password: undefined },
+      token,
     });
   } catch (error) {
     console.log('Error at loginController', error.message);
