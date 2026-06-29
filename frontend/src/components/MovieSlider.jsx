@@ -15,7 +15,7 @@ export default function MovieSlider({ title, category }) {
       setLoading(true);
       try {
         const res = await axios.get(`/api/v1/${contentType}/${category}`);
-        if (res.data.succcess) {
+        if (res.data.success) {
           setList(res.data.content || []);
         }
       } catch (error) {
@@ -45,11 +45,18 @@ export default function MovieSlider({ title, category }) {
         <h2 className="text-xl md:text-2xl font-bold mb-4 text-white capitalize">
           {title}
         </h2>
-        <div className="flex gap-4 overflow-x-hidden py-4">
+        <div
+          className="flex gap-4 overflow-x-auto scrollbar-none py-4 scroll-smooth"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
+          }}
+        >
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="min-w-37.5 sm:min-w-50 md:min-w-62.5 aspect-video bg-zinc-900 rounded-md animate-pulse"
+              className="min-w-37.5 sm:min-w-50 md:min-w-70 aspect-video bg-zinc-900 rounded-md animate-pulse"
             />
           ))}
         </div>
@@ -77,19 +84,23 @@ export default function MovieSlider({ title, category }) {
       <div
         ref={sliderRef}
         className="flex gap-4 overflow-x-auto scrollbar-none py-4 scroll-smooth"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+        }}
       >
         {list.map((item) => {
           const imagePath = item.backdrop_path || item.poster_path;
           const imageUrl = imagePath
             ? `https://image.tmdb.org/t/p/w500${imagePath}`
-            : 'https://via.placeholder.com/500x281/1c1c1c/ffffff?text=No+Image';
+            : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="500" height="281" viewBox="0 0 500 281"><rect width="100%" height="100%" fill="%231c1c1c"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%238c8c8c" font-family="sans-serif" font-size="20" font-weight="bold">No Image</text></svg>';
 
           return (
             <Link
               key={item.id}
               to={`/watch/${item.id}`}
-              className="min-w-45 sm:min-w-55 md:min-w-70 relative rounded-md overflow-hidden transition-all duration-300 hover:scale-105 hover:z-20 shadow-lg hover:shadow-black/70 group"
+              className="min-w-37.5 sm:min-w-50 md:min-w-70 relative rounded-md overflow-hidden transition-all duration-300 hover:scale-105 hover:z-20 shadow-lg hover:shadow-black/70 group"
             >
               <img
                 src={imageUrl}

@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../store/api';
@@ -30,13 +38,16 @@ export default function MovieSlider({ title, category }: MovieSliderProps) {
       setLoading(true);
       try {
         const token = await AsyncStorage.getItem('token');
-        const res = await fetch(`${API_URL}/api/v1/${contentType}/${category}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
+        const res = await fetch(
+          `${API_URL}/api/v1/${contentType}/${category}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
         const data = await res.json();
-        if (data.succcess) {
+        if (data.success) {
           setList(data.content || []);
         }
       } catch (error) {

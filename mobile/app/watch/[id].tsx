@@ -73,29 +73,42 @@ export default function WatchDetail() {
         const headers = { Authorization: `Bearer ${token}` };
 
         // 1. Fetch details
-        const detailsRes = await fetch(`${API_URL}/api/v1/${contentType}/${id}/details`, { headers });
+        const detailsRes = await fetch(
+          `${API_URL}/api/v1/${contentType}/${id}/details`,
+          { headers },
+        );
         const detailsData = await detailsRes.json();
-        if (detailsData.succcess) {
+        if (detailsData.success) {
           setDetails(detailsData.content);
         } else {
           throw new Error('Failed to fetch details');
         }
 
         // 2. Fetch trailers
-        const trailersRes = await fetch(`${API_URL}/api/v1/${contentType}/${id}/trailers`, { headers });
+        const trailersRes = await fetch(
+          `${API_URL}/api/v1/${contentType}/${id}/trailers`,
+          { headers },
+        );
         const trailersData = await trailersRes.json();
-        if (trailersData.succcess) {
+        if (trailersData.success) {
           const ytTrailers = (trailersData.trailers || []).filter(
-            (v: Trailer) => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')
+            (v: Trailer) =>
+              v.site === 'YouTube' &&
+              (v.type === 'Trailer' || v.type === 'Teaser'),
           );
-          setTrailers(ytTrailers.length > 0 ? ytTrailers : trailersData.trailers || []);
+          setTrailers(
+            ytTrailers.length > 0 ? ytTrailers : trailersData.trailers || [],
+          );
           setCurrentTrailerIdx(0);
         }
 
         // 3. Fetch similar items
-        const similarRes = await fetch(`${API_URL}/api/v1/${contentType}/${id}/similar`, { headers });
+        const similarRes = await fetch(
+          `${API_URL}/api/v1/${contentType}/${id}/similar`,
+          { headers },
+        );
         const similarData = await similarRes.json();
-        if (similarData.succcess) {
+        if (similarData.success) {
           setSimilar(similarData.similar || []);
         }
       } catch (err: any) {
@@ -140,7 +153,9 @@ export default function WatchDetail() {
   }
 
   const hasTrailer = trailers.length > 0 && trailers[currentTrailerIdx]?.key;
-  const releaseYear = details.release_date?.split('-')[0] || details.first_air_date?.split('-')[0];
+  const releaseYear =
+    details.release_date?.split('-')[0] ||
+    details.first_air_date?.split('-')[0];
   const posterUrl = details.poster_path
     ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
     : 'https://via.placeholder.com/500x750/1c1c1c/ffffff?text=No+Image';
@@ -155,7 +170,10 @@ export default function WatchDetail() {
         <Ionicons name="arrow-back" size={24} color="#ffffff" />
       </TouchableOpacity>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Trailer Video Player Section */}
         <View style={[styles.playerContainer, { marginTop: insets.top }]}>
           {hasTrailer ? (
@@ -168,7 +186,9 @@ export default function WatchDetail() {
             <View style={styles.noTrailer}>
               <Ionicons name="alert-circle-outline" size={40} color="#71717a" />
               <Text style={styles.noTrailerTitle}>No trailer available</Text>
-              <Text style={styles.noTrailerSub}>We could not find a YouTube trailer.</Text>
+              <Text style={styles.noTrailerSub}>
+                We could not find a YouTube trailer.
+              </Text>
             </View>
           )}
 
@@ -197,7 +217,11 @@ export default function WatchDetail() {
                 <Ionicons
                   name="chevron-forward"
                   size={18}
-                  color={currentTrailerIdx === trailers.length - 1 ? '#3f3f46' : '#ffffff'}
+                  color={
+                    currentTrailerIdx === trailers.length - 1
+                      ? '#3f3f46'
+                      : '#ffffff'
+                  }
                 />
               </TouchableOpacity>
             </View>
@@ -217,7 +241,9 @@ export default function WatchDetail() {
                 <Text style={styles.metaText}>{releaseYear || 'N/A'}</Text>
                 <Text style={styles.metaDivider}>|</Text>
                 <Ionicons name="star" size={14} color="#eab308" />
-                <Text style={styles.ratingText}>{details.vote_average?.toFixed(1) || '0.0'}</Text>
+                <Text style={styles.ratingText}>
+                  {details.vote_average?.toFixed(1) || '0.0'}
+                </Text>
                 {details.adult && <Text style={styles.adultBadge}>18+</Text>}
               </View>
             </View>
@@ -263,7 +289,10 @@ export default function WatchDetail() {
                     onPress={() => router.push(`/watch/${item.id}`)}
                     style={styles.similarCard}
                   >
-                    <Image source={{ uri: imgUrl }} style={styles.similarImage} />
+                    <Image
+                      source={{ uri: imgUrl }}
+                      style={styles.similarImage}
+                    />
                     <View style={styles.similarOverlay}>
                       <Text style={styles.similarTitle} numberOfLines={1}>
                         {item.title || item.name}

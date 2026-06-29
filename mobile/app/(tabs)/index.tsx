@@ -41,11 +41,11 @@ export default function Home() {
         const token = await AsyncStorage.getItem('token');
         const res = await fetch(`${API_URL}/api/v1/${contentType}/trending`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         const data = await res.json();
-        if (data.succcess) {
+        if (data.success) {
           setTrending(data.content || null);
         }
       } catch (error) {
@@ -72,23 +72,39 @@ export default function Home() {
           <Text style={styles.logoText}>BYH VIDEOS</Text>
           <Avatar />
         </View>
-        
+
         {/* Second row: Content Toggler */}
         <View style={styles.headerSecondRow}>
           <View style={styles.contentToggler}>
             <TouchableOpacity
               onPress={() => setContentType('movie')}
-              style={[styles.toggleBtn, contentType === 'movie' && styles.toggleBtnActive]}
+              style={[
+                styles.toggleBtn,
+                contentType === 'movie' && styles.toggleBtnActive,
+              ]}
             >
-              <Text style={[styles.toggleText, contentType === 'movie' && styles.toggleTextActive]}>
+              <Text
+                style={[
+                  styles.toggleText,
+                  contentType === 'movie' && styles.toggleTextActive,
+                ]}
+              >
                 Movies
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setContentType('tv')}
-              style={[styles.toggleBtn, contentType === 'tv' && styles.toggleBtnActive]}
+              style={[
+                styles.toggleBtn,
+                contentType === 'tv' && styles.toggleBtnActive,
+              ]}
             >
-              <Text style={[styles.toggleText, contentType === 'tv' && styles.toggleTextActive]}>
+              <Text
+                style={[
+                  styles.toggleText,
+                  contentType === 'tv' && styles.toggleTextActive,
+                ]}
+              >
                 TV Shows
               </Text>
             </TouchableOpacity>
@@ -96,7 +112,10 @@ export default function Home() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Hero Banner Section */}
         {loadingTrending ? (
           <View style={styles.heroLoader}>
@@ -111,11 +130,17 @@ export default function Home() {
           >
             <View style={styles.heroOverlay}>
               <View style={styles.heroMeta}>
-                <Text style={styles.heroTitle}>{trending.title || trending.name}</Text>
+                <Text style={styles.heroTitle}>
+                  {trending.title || trending.name}
+                </Text>
                 <View style={styles.heroInfoRow}>
-                  <Text style={styles.heroYearText}>{getReleaseYear(trending)}</Text>
+                  <Text style={styles.heroYearText}>
+                    {getReleaseYear(trending)}
+                  </Text>
                   <Text style={styles.divider}>|</Text>
-                  <Text style={styles.heroAgeBadge}>{trending.adult ? '18+' : 'PG-13'}</Text>
+                  <Text style={styles.heroAgeBadge}>
+                    {trending.adult ? '18+' : 'PG-13'}
+                  </Text>
                 </View>
                 <Text style={styles.heroOverview} numberOfLines={3}>
                   {trending.overview}
@@ -134,7 +159,11 @@ export default function Home() {
                     onPress={() => router.push(`/watch/${trending.id}`)}
                     style={styles.infoBtn}
                   >
-                    <Ionicons name="information-circle-outline" size={18} color="#ffffff" />
+                    <Ionicons
+                      name="information-circle-outline"
+                      size={18}
+                      color="#ffffff"
+                    />
                     <Text style={styles.infoBtnText}>Info</Text>
                   </TouchableOpacity>
                 </View>
@@ -143,7 +172,9 @@ export default function Home() {
           </ImageBackground>
         ) : (
           <View style={[styles.heroBanner, styles.heroEmpty]}>
-            <Text style={styles.emptyText}>Failed to load trending content.</Text>
+            <Text style={styles.emptyText}>
+              Failed to load trending content.
+            </Text>
           </View>
         )}
 

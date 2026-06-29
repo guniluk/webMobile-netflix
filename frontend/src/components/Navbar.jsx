@@ -102,8 +102,8 @@ export default function Navbar() {
               <FaSearch size={18} />
             </Link>
 
-            {/* User Dropdown */}
-            <div className="dropdown dropdown-end">
+            {/* User Dropdown (Desktop Only) */}
+            <div className="dropdown dropdown-end hidden md:block">
               <label
                 tabIndex={0}
                 className="btn btn-ghost btn-circle avatar cursor-pointer w-12 h-12"
@@ -143,7 +143,7 @@ export default function Navbar() {
                 <li>
                   <button
                     onClick={handleLogout}
-                    className="py-2 text-red-400 hover:text-red-300 flex items-center gap-2"
+                    className="py-2 text-red-400 hover:text-red-300 flex items-center gap-2 w-full text-left"
                   >
                     <FaSignOutAlt /> Sign Out
                   </button>
@@ -163,7 +163,7 @@ export default function Navbar() {
         {/* Mobile menu trigger */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-gray-300 hover:text-white p-2"
+          className="md:hidden text-gray-300 hover:text-white p-2 focus:outline-none"
         >
           <FaBars size={20} />
         </button>
@@ -171,14 +171,14 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-zinc-950 border-b border-zinc-800 flex flex-col p-4 gap-4 text-sm md:hidden animate-fade-in">
+        <div className="absolute top-16 left-0 w-full bg-zinc-950/95 border-b border-zinc-800 flex flex-col p-4 gap-3 text-sm md:hidden backdrop-blur-md transition-all duration-300 ease-in-out shadow-2xl">
           <button
             onClick={() => {
               setContentType('movie');
               setMobileMenuOpen(false);
               navigate('/');
             }}
-            className={`text-left py-2 px-4 rounded hover:bg-zinc-900 ${
+            className={`text-left py-2 px-4 rounded hover:bg-zinc-900 transition-colors ${
               location.pathname === '/' && contentType === 'movie'
                 ? 'bg-zinc-900 text-white font-semibold'
                 : 'text-gray-400'
@@ -192,7 +192,7 @@ export default function Navbar() {
               setMobileMenuOpen(false);
               navigate('/');
             }}
-            className={`text-left py-2 px-4 rounded hover:bg-zinc-900 ${
+            className={`text-left py-2 px-4 rounded hover:bg-zinc-900 transition-colors ${
               location.pathname === '/' && contentType === 'tv'
                 ? 'bg-zinc-900 text-white font-semibold'
                 : 'text-gray-400'
@@ -203,7 +203,7 @@ export default function Navbar() {
           <Link
             to="/search"
             onClick={() => setMobileMenuOpen(false)}
-            className={`text-left py-2 px-4 rounded hover:bg-zinc-900 ${
+            className={`text-left py-2 px-4 rounded hover:bg-zinc-900 transition-colors ${
               location.pathname === '/search'
                 ? 'bg-zinc-900 text-white font-semibold'
                 : 'text-gray-400'
@@ -211,6 +211,45 @@ export default function Navbar() {
           >
             Search History
           </Link>
+
+          {/* User Profile in Mobile Menu */}
+          {user && (
+            <div className="mt-2 pt-3 border-t border-zinc-800 flex flex-col gap-3 px-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full border border-zinc-700 bg-red-600 flex items-center justify-center text-white font-bold uppercase overflow-hidden">
+                  {!imgError && user.image ? (
+                    <img
+                      src={user.image}
+                      alt="user profile"
+                      onError={() => setImgError(true)}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm">
+                      {user.username ? user.username.charAt(0) : 'U'}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="font-semibold text-white truncate text-sm">
+                    {user.username}
+                  </span>
+                  <span className="text-xs text-gray-500 truncate">
+                    {user.email}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="btn btn-sm btn-outline border-zinc-700 hover:border-red-600 hover:bg-red-600/10 text-red-400 hover:text-red-300 w-full font-bold flex items-center justify-center gap-2 mt-1"
+              >
+                <FaSignOutAlt /> Sign Out
+              </button>
+            </div>
+          )}
         </div>
       )}
     </nav>

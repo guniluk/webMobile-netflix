@@ -6,9 +6,9 @@ const getBaseUrl = () => {
   const hostUri = Constants.expoConfig?.hostUri;
   if (hostUri) {
     const ip = hostUri.split(':')[0];
-    return `http://${ip}:5000`;
+    return `http://${ip}:3000`;
   }
-  
+
   // Fallback for production or when hostUri is not available
   return 'http://localhost:5000';
 };

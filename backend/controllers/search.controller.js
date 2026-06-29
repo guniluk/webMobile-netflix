@@ -1,16 +1,15 @@
 import User from '../models/user.model.js';
 import { fetchFromTMDB } from '../services/tmdb.service.js';
 
-export const searchPerson = async (req, res) => {
-  const { query } = req.params;
+export const searchPerson = async (req, res, next) => {
   try {
-    const url = `https://api.themoviedb.org/3/search/person?query=${query}&include_adult=false&language=en-US&page=1`;
-    const data = await fetchFromTMDB(url);
+    const data = await fetchFromTMDB(
+      `https://api.themoviedb.org/3/search/person?query=${req.params.query}&include_adult=false&language=en-US&page=1`,
+    );
     if (data.results.length === 0)
-      return res.status(404).json({
-        succcess: false,
-        message: 'No results found',
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: 'No results found' });
 
     await User.findByIdAndUpdate(req.user._id, {
       $push: {
@@ -23,31 +22,21 @@ export const searchPerson = async (req, res) => {
         },
       },
     });
-
-    res.status(200).json({
-      succcess: true,
-      content: data.results,
-    });
+    res.status(200).json({ success: true, content: data.results });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({
-      succcess: false,
-      message: 'Internal server error',
-    });
+    next(error);
   }
 };
 
-export const searchMovie = async (req, res) => {
-  const { query } = req.params;
+export const searchMovie = async (req, res, next) => {
   try {
-    const url = `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`;
-
-    const data = await fetchFromTMDB(url);
+    const data = await fetchFromTMDB(
+      `https://api.themoviedb.org/3/search/movie?query=${req.params.query}&include_adult=false&language=en-US&page=1`,
+    );
     if (data.results.length === 0)
-      return res.status(404).json({
-        succcess: false,
-        message: 'No results found',
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: 'No results found' });
 
     await User.findByIdAndUpdate(req.user._id, {
       $push: {
@@ -60,31 +49,21 @@ export const searchMovie = async (req, res) => {
         },
       },
     });
-
-    res.status(200).json({
-      succcess: true,
-      content: data.results,
-    });
+    res.status(200).json({ success: true, content: data.results });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({
-      succcess: false,
-      message: 'Internal server error',
-    });
+    next(error);
   }
 };
 
-export const searchTv = async (req, res) => {
-  const { query } = req.params;
+export const searchTv = async (req, res, next) => {
   try {
-    const url = `https://api.themoviedb.org/3/search/tv?query=${query}&include_adult=false&language=en-US&page=1`;
-
-    const data = await fetchFromTMDB(url);
+    const data = await fetchFromTMDB(
+      `https://api.themoviedb.org/3/search/tv?query=${req.params.query}&include_adult=false&language=en-US&page=1`,
+    );
     if (data.results.length === 0)
-      return res.status(404).json({
-        succcess: false,
-        message: 'No results found',
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: 'No results found' });
 
     await User.findByIdAndUpdate(req.user._id, {
       $push: {
@@ -97,55 +76,29 @@ export const searchTv = async (req, res) => {
         },
       },
     });
-
-    res.status(200).json({
-      succcess: true,
-      content: data.results,
-    });
+    res.status(200).json({ success: true, content: data.results });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({
-      succcess: false,
-      message: 'Internal server error',
-    });
+    next(error);
   }
 };
 
-export const getSearchHistory = async (req, res) => {
+export const getSearchHistory = async (req, res, next) => {
   try {
-    res.status(200).json({
-      succcess: true,
-      content: req.user.searchHistory,
-    });
+    res.status(200).json({ success: true, content: req.user.searchHistory });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({
-      succcess: false,
-      message: 'Internal server error',
-    });
+    next(error);
   }
 };
 
-export const deleteSearchHistory = async (req, res) => {
-  let { id } = req.params;
-  id = parseInt(id);
+export const deleteSearchHistory = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.user._id, {
-      $pull: {
-        searchHistory: {
-          id: id,
-        },
-      },
+      $pull: { searchHistory: { id: parseInt(req.params.id) } },
     });
-    res.status(200).json({
-      succcess: true,
-      message: 'Search history deleted successfully',
-    });
+    res
+      .status(200)
+      .json({ success: true, message: 'Search history deleted successfully' });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({
-      succcess: false,
-      message: 'Internal server error',
-    });
+    next(error);
   }
 };

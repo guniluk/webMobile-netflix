@@ -31,7 +31,9 @@ const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 48) / 3; // 3 columns grid with padding
 
 export default function Search() {
-  const [activeTab, setActiveTab] = useState<'movie' | 'tv' | 'person'>('movie');
+  const [activeTab, setActiveTab] = useState<'movie' | 'tv' | 'person'>(
+    'movie',
+  );
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResultItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,14 +54,14 @@ export default function Search() {
         `${API_URL}/api/v1/search/${activeTab}/${encodeURIComponent(query.trim())}`,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       const data = await res.json();
       if (res.status === 404) {
         setError('No results found. Try another query.');
-      } else if (!res.ok || !data.succcess) {
+      } else if (!res.ok || !data.success) {
         throw new Error(data.message || 'An error occurred while searching.');
       } else {
         setResults(data.content || []);
@@ -78,7 +80,8 @@ export default function Search() {
   };
 
   const renderResultItem = ({ item }: { item: SearchResultItem }) => {
-    const imagePath = activeTab === 'person' ? item.profile_path : item.poster_path;
+    const imagePath =
+      activeTab === 'person' ? item.profile_path : item.poster_path;
     const title = activeTab === 'person' ? item.name : item.title || item.name;
     const imageUrl = imagePath
       ? `https://image.tmdb.org/t/p/w300${imagePath}`
@@ -132,15 +135,27 @@ export default function Search() {
               setResults([]);
               setError('');
             }}
-            style={[styles.tabButton, activeTab === tab && styles.tabButtonActive]}
+            style={[
+              styles.tabButton,
+              activeTab === tab && styles.tabButtonActive,
+            ]}
           >
             <Ionicons
               name={tab === 'movie' ? 'film' : tab === 'tv' ? 'tv' : 'person'}
               size={16}
               color={activeTab === tab ? '#ffffff' : '#a1a1aa'}
             />
-            <Text style={[styles.tabButtonText, activeTab === tab && styles.tabButtonTextActive]}>
-              {tab === 'person' ? 'People' : tab === 'tv' ? 'TV Shows' : 'Movies'}
+            <Text
+              style={[
+                styles.tabButtonText,
+                activeTab === tab && styles.tabButtonTextActive,
+              ]}
+            >
+              {tab === 'person'
+                ? 'People'
+                : tab === 'tv'
+                  ? 'TV Shows'
+                  : 'Movies'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -150,7 +165,11 @@ export default function Search() {
       <View style={styles.searchBar}>
         <TextInput
           placeholder={`Search for a ${
-            activeTab === 'person' ? 'person' : activeTab === 'tv' ? 'TV show' : 'movie'
+            activeTab === 'person'
+              ? 'person'
+              : activeTab === 'tv'
+                ? 'TV show'
+                : 'movie'
           }...`}
           placeholderTextColor="#7f7f7f"
           style={styles.searchInput}
@@ -176,7 +195,9 @@ export default function Search() {
       ) : results.length === 0 ? (
         <View style={styles.centerContainer}>
           <Ionicons name="film-outline" size={60} color="#3f3f46" />
-          <Text style={styles.emptyText}>Find your next favorite movies or shows</Text>
+          <Text style={styles.emptyText}>
+            Find your next favorite movies or shows
+          </Text>
         </View>
       ) : (
         <FlatList

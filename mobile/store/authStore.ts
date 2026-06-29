@@ -15,8 +15,15 @@ interface AuthState {
   isSigningUp: boolean;
   isLoggingIn: boolean;
   isCheckingAuth: boolean;
-  signup: (username: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  signup: (
+    username: string,
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; message?: string }>;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<{ success: boolean; message?: string }>;
   authCheck: () => Promise<{ success: boolean; message?: string }>;
 }
@@ -41,7 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const data = await response.json();
 
-      if (!response.ok || !data.succcess) {
+      if (!response.ok || !data.success) {
         throw new Error(data.message || 'Signup failed');
       }
 
@@ -72,7 +79,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const data = await response.json();
 
-      if (!response.ok || !data.succcess) {
+      if (!response.ok || !data.success) {
         throw new Error(data.message || 'Login failed');
       }
 
@@ -97,7 +104,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       await fetch(`${API_URL}/api/v1/auth/logout`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
     } catch (error) {
@@ -125,13 +132,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await fetch(`${API_URL}/api/v1/auth/authCheck`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       const data = await response.json();
 
-      if (!response.ok || !data.succcess) {
+      if (!response.ok || !data.success) {
         throw new Error(data.message || 'Authcheck failed');
       }
 

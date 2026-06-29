@@ -5,7 +5,11 @@ const protectRoute = async (req, res, next) => {
   try {
     let token = req.cookies['jwt-netflix'];
 
-    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    if (
+      !token &&
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer ')
+    ) {
       token = req.headers.authorization.split(' ')[1];
     }
 

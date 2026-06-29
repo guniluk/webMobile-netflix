@@ -35,11 +35,11 @@ export default function History() {
       const token = await AsyncStorage.getItem('token');
       const res = await fetch(`${API_URL}/api/v1/search/history`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await res.json();
-      if (data.succcess) {
+      if (data.success) {
         setHistory(data.content || []);
       }
     } catch (error) {
@@ -70,11 +70,11 @@ export default function History() {
       const res = await fetch(`${API_URL}/api/v1/search/history/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await res.json();
-      if (data.succcess) {
+      if (data.success) {
         setHistory((prev) => prev.filter((item) => item.id !== id));
       }
     } catch (error) {
@@ -102,13 +102,20 @@ export default function History() {
               {item.title}
             </Text>
             <View style={styles.typeRow}>
-              <Ionicons name={getTabIconName(item.searchType)} size={12} color="#a1a1aa" />
+              <Ionicons
+                name={getTabIconName(item.searchType)}
+                size={12}
+                color="#a1a1aa"
+              />
               <Text style={styles.typeText}>{item.searchType}</Text>
             </View>
           </View>
         </View>
 
-        <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteBtn}>
+        <TouchableOpacity
+          onPress={() => handleDelete(item.id)}
+          style={styles.deleteBtn}
+        >
           <Ionicons name="trash-outline" size={18} color="#ef4444" />
         </TouchableOpacity>
       </View>
