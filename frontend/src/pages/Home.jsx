@@ -45,60 +45,96 @@ export default function Home() {
   // 1. Landing Page for Unauthenticated Users
   if (!user) {
     return (
-      <div
-        className="relative min-h-screen w-full flex flex-col bg-cover bg-center bg-no-repeat text-white"
-        style={{
-          backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.9) 0, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.9) 100%), url('https://assets.nflxext.com/ffe/siteui/vlv3/435e8bb8-7f1b-49cb-8da8-bff997124294/web/US-en-20260511-TRIFECTA-perspective_faa2ba65-d9fe-44bc-b4e0-f702a991adaa_large.jpg')`,
-        }}
-      >
-        {/* Navbar */}
-        <header className="flex justify-between items-center px-4 md:px-12 py-6">
-          <span className="text-red-600 font-extrabold text-3xl tracking-wider">
-            BYH Videos
-          </span>
-          <Link
-            to="/login"
-            className="btn btn-error btn-sm font-bold text-white bg-red-600 border-none hover:bg-red-700"
-          >
-            Sign In
-          </Link>
-        </header>
-
-        {/* Content Body */}
-        <main className="flex-1 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto z-10 py-12">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 leading-tight">
-            Unlimited movies, TV shows, and more
-          </h1>
-          <p className="text-base sm:text-lg md:text-2xl font-medium mb-6">
-            Watch anywhere. Cancel anytime.
-          </p>
-          <p className="text-xs sm:text-sm md:text-xl text-zinc-300 mb-6">
-            Ready to watch? Enter your email to create or restart your
-            membership.
-          </p>
-
-          <form
-            onSubmit={handleLandingSubmit}
-            className="flex flex-col w-full max-w-lg md:max-w-2xl mx-auto md:flex-row gap-4 px-4"
-          >
-            <input
-              type="email"
-              placeholder="Email address"
-              value={landingEmail}
-              onChange={(e) => setLandingEmail(e.target.value)}
-              required
-              className="input input-bordered flex-1 py-3 md:py-6 bg-black/60 border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:border-red-600 text-sm md:text-base"
-            />
-            <button
-              type="submit"
-              className="btn btn-error py-3 md:py-6 font-extrabold text-white text-base md:text-lg bg-red-600 border-none hover:bg-red-700 w-full md:w-auto px-8"
+      <div className="relative min-h-screen w-full bg-black text-white flex flex-col">
+        {/* Hero Section */}
+        <div
+          className="relative w-full flex flex-col bg-cover bg-center bg-no-repeat border-b-8 border-zinc-800"
+          style={{
+            backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.9) 0, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0.9) 100%), url('https://assets.nflxext.com/ffe/siteui/vlv3/435e8bb8-7f1b-49cb-8da8-bff997124294/web/US-en-20260511-TRIFECTA-perspective_faa2ba65-d9fe-44bc-b4e0-f702a991adaa_large.jpg')`,
+            minHeight: '75vh',
+          }}
+        >
+          {/* Navbar */}
+          <header className="flex justify-between items-center px-4 md:px-12 py-6 z-10">
+            <span className="text-red-600 font-extrabold text-3xl tracking-wider">BYH Videos</span>
+            <Link
+              to="/login"
+              className="btn btn-error btn-sm font-bold text-white bg-red-600 border-none hover:bg-red-700"
             >
-              Get Started &gt;
-            </button>
-          </form>
-        </main>
+              Sign In
+            </Link>
+          </header>
 
-        <Footer />
+          {/* Content Body */}
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto z-10 py-12 md:py-20">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 leading-tight">
+              Unlimited movies, TV shows, and more
+            </h1>
+            <p className="text-base sm:text-lg md:text-2xl font-medium mb-6">
+              Watch anywhere. Cancel anytime.
+            </p>
+            <p className="text-xs sm:text-sm md:text-xl text-zinc-300 mb-6">
+              Ready to watch? Enter your email to create or restart your membership.
+            </p>
+
+            <form
+              onSubmit={handleLandingSubmit}
+              className="flex flex-col w-full max-w-lg md:max-w-2xl mx-auto md:flex-row gap-4 px-4"
+            >
+              <input
+                type="email"
+                placeholder="Email address"
+                value={landingEmail}
+                onChange={(e) => setLandingEmail(e.target.value)}
+                required
+                className="input input-bordered w-full flex-1 py-3 md:py-6 bg-black/60 border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:border-red-600 text-sm md:text-base"
+              />
+              <button
+                type="submit"
+                className="btn btn-error py-3 md:py-6 font-extrabold text-white text-base md:text-lg bg-red-600 border-none hover:bg-red-700 w-full md:w-auto px-8"
+              >
+                Get Started &gt;
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* 2nd Section: Enjoy on your TV */}
+        <section className="bg-black py-16 border-b-8 border-zinc-800">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 md:px-12 gap-8">
+            {/* Left Text */}
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 leading-tight">
+                Enjoy Movie and TV programs
+              </h2>
+              <p className="text-base sm:text-lg md:text-xl text-zinc-300">
+                Watch on Smart TVs, Playstation, Xbox, Chromecast, Apple TV, Blu-ray players, and
+                more.
+              </p>
+            </div>
+
+            {/* Right Image/Video */}
+            <div className="flex-1 relative flex justify-center items-center">
+              <div className="relative max-w-120 w-full overflow-hidden">
+                <img src="/tv.png" alt="TV frame" className="w-full relative z-20" />
+                <video
+                  className="absolute top-[20.5%] left-[13%] w-[73.5%] h-[54.5%] z-10 object-cover"
+                  playsInline
+                  autoPlay
+                  muted
+                  loop
+                >
+                  <source src="/tv-video.m4v" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <div className="bg-black">
+          <Footer />
+        </div>
       </div>
     );
   }
@@ -125,9 +161,8 @@ export default function Home() {
               {trending.title || trending.name}
             </h1>
             <p className="text-[10px] sm:text-xs md:text-sm text-zinc-400 drop-shadow-sm">
-              {trending.release_date?.split('-')[0] ||
-                trending.first_air_date?.split('-')[0]}{' '}
-              | {trending.adult ? '18+' : 'PG-13'}
+              {trending.release_date?.split('-')[0] || trending.first_air_date?.split('-')[0]} |{' '}
+              {trending.adult ? '18+' : 'PG-13'}
             </p>
             <p className="text-xs sm:text-sm md:text-lg text-zinc-300 drop-shadow-sm line-clamp-2 md:line-clamp-4">
               {trending.overview}

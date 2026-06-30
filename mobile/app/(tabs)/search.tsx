@@ -65,6 +65,7 @@ export default function Search() {
         throw new Error(data.message || 'An error occurred while searching.');
       } else {
         setResults(data.content || []);
+        setQuery('');
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred while searching.');

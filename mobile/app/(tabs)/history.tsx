@@ -29,6 +29,18 @@ export default function History() {
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation();
 
+  // Helper to format date cleanly on mobile
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}.${month}.${day}`;
+  };
+
+
   const fetchHistory = async (showLoader = true) => {
     if (showLoader) setLoading(true);
     try {
@@ -108,6 +120,12 @@ export default function History() {
                 color="#a1a1aa"
               />
               <Text style={styles.typeText}>{item.searchType}</Text>
+              {item.createdAt ? (
+                <>
+                  <Text style={styles.bulletText}>•</Text>
+                  <Text style={styles.dateText}>{formatDate(item.createdAt)}</Text>
+                </>
+              ) : null}
             </View>
           </View>
         </View>
@@ -239,6 +257,15 @@ const styles = StyleSheet.create({
     color: '#a1a1aa',
     fontSize: 11,
     textTransform: 'capitalize',
+  },
+  bulletText: {
+    color: '#71717a',
+    fontSize: 11,
+    marginHorizontal: 4,
+  },
+  dateText: {
+    color: '#71717a',
+    fontSize: 11,
   },
   deleteBtn: {
     padding: 8,

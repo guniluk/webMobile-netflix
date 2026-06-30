@@ -16,6 +16,23 @@ export default function Search() {
   const [error, setError] = useState('');
   const { setContentType } = useContentStore();
 
+  // Helper to format date cleanly
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }) + ' ' + date.toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  };
+
+
   // Fetch search history
   const fetchHistory = async () => {
     setHistoryLoading(true);
@@ -54,6 +71,7 @@ export default function Search() {
         setResults(res.data.content || []);
         // Refresh history after a successful search because backend saves it to DB
         fetchHistory();
+        setQuery('');
       }
     } catch (err) {
       if (err.response?.status === 404) {
@@ -210,7 +228,7 @@ export default function Search() {
             <h2 className="text-xl md:text-2xl font-bold mb-6 text-white flex items-center gap-2">
               Recent Search History
             </h2>
-            <div className="flex flex-col gap-3 max-w-3xl mx-auto">
+            <div className="flex flex-col gap-3.5 max-w-3xl mx-auto">
               {searchHistory.map((item, idx) => {
                 const historyImageUrl = item.image
                   ? `https://image.tmdb.org/t/p/w200${item.image}`
@@ -219,31 +237,45 @@ export default function Search() {
                 return (
                   <div
                     key={`${item.id}-${idx}`}
-                    className="flex justify-between items-center bg-zinc-900/40 border border-zinc-800/80 rounded-lg p-2.5 sm:p-3 hover:bg-zinc-900/80 transition-colors"
+                    className="flex justify-between items-center bg-zinc-900/30 border border-zinc-800/60 rounded-xl p-3 sm:p-4 hover:bg-zinc-900/80 hover:border-zinc-700/80 hover:scale-[1.01] transition-all duration-200 shadow-lg backdrop-blur-sm"
                   >
                     <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                       <img
                         src={historyImageUrl}
                         alt={item.title}
-                        className="w-10 h-14 sm:w-12 sm:h-16 object-cover rounded border border-zinc-800 shadow"
+                        className="w-10 h-14 sm:w-12 sm:h-16 object-cover rounded-lg border border-zinc-800 shadow-md"
                       />
                       <div className="min-w-0">
-                        <p className="font-bold text-xs sm:text-sm text-white truncate">
+                        <p className="font-bold text-sm sm:text-base text-white truncate">
                           {item.title}
                         </p>
-                        <span className="text-zinc-500 text-[10px] sm:text-xs capitalize flex items-center gap-1.5 mt-1">
-                          {getTabIcon(item.searchType)} {item.searchType}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                          <span className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-zinc-800/80 border border-zinc-700 text-zinc-300 capitalize flex items-center gap-1">
+                            {getTabIcon(item.searchType)} {item.searchType}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => handleDeleteHistory(item.id)}
-                      className="btn btn-ghost btn-circle text-zinc-500 hover:text-red-500 transition-colors"
-                      title="Delete entry"
-                    >
-                      <FaTrash size={12} />
-                    </button>
+                    <div className="flex items-center gap-3 sm:gap-5">
+                      {item.createdAt && (
+                        <span className="text-zinc-500 text-xs font-medium hidden sm:inline-block bg-zinc-950/40 px-3 py-1 rounded-md border border-zinc-800/40">
+                          {formatDate(item.createdAt)}
+                        </span>
+                      )}
+                      {item.createdAt && (
+                        <span className="text-zinc-500 text-[10px] sm:hidden bg-zinc-950/40 px-2 py-0.5 rounded-md border border-zinc-800/40">
+                          {new Date(item.createdAt).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })}
+                        </span>
+                      )}
+                      <button
+                        onClick={() => handleDeleteHistory(item.id)}
+                        className="btn btn-ghost btn-circle btn-sm text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-all duration-200"
+                        title="Delete entry"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
                   </div>
                 );
               })}

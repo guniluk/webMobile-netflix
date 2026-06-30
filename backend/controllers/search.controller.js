@@ -3,13 +3,12 @@ import { fetchFromTMDB } from '../services/tmdb.service.js';
 
 export const searchPerson = async (req, res, next) => {
   try {
+    const { query } = req.params;
     const data = await fetchFromTMDB(
-      `https://api.themoviedb.org/3/search/person?query=${req.params.query}&include_adult=false&language=en-US&page=1`,
+      `https://api.themoviedb.org/3/search/person?query=${query}&include_adult=false&language=en-US&page=1`
     );
     if (data.results.length === 0)
-      return res
-        .status(404)
-        .json({ success: false, message: 'No results found' });
+      return res.status(404).json({ success: false, message: 'No results found' });
 
     await User.findByIdAndUpdate(req.user._id, {
       $push: {
@@ -30,13 +29,12 @@ export const searchPerson = async (req, res, next) => {
 
 export const searchMovie = async (req, res, next) => {
   try {
+    const { query } = req.params;
     const data = await fetchFromTMDB(
-      `https://api.themoviedb.org/3/search/movie?query=${req.params.query}&include_adult=false&language=en-US&page=1`,
+      `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`
     );
     if (data.results.length === 0)
-      return res
-        .status(404)
-        .json({ success: false, message: 'No results found' });
+      return res.status(404).json({ success: false, message: 'No results found' });
 
     await User.findByIdAndUpdate(req.user._id, {
       $push: {
@@ -57,13 +55,12 @@ export const searchMovie = async (req, res, next) => {
 
 export const searchTv = async (req, res, next) => {
   try {
+    const { query } = req.params;
     const data = await fetchFromTMDB(
-      `https://api.themoviedb.org/3/search/tv?query=${req.params.query}&include_adult=false&language=en-US&page=1`,
+      `https://api.themoviedb.org/3/search/tv?query=${query}&include_adult=false&language=en-US&page=1`
     );
     if (data.results.length === 0)
-      return res
-        .status(404)
-        .json({ success: false, message: 'No results found' });
+      return res.status(404).json({ success: false, message: 'No results found' });
 
     await User.findByIdAndUpdate(req.user._id, {
       $push: {
@@ -92,12 +89,11 @@ export const getSearchHistory = async (req, res, next) => {
 
 export const deleteSearchHistory = async (req, res, next) => {
   try {
+    const { id } = req.params;
     await User.findByIdAndUpdate(req.user._id, {
-      $pull: { searchHistory: { id: parseInt(req.params.id) } },
+      $pull: { searchHistory: { id: parseInt(id) } },
     });
-    res
-      .status(200)
-      .json({ success: true, message: 'Search history deleted successfully' });
+    res.status(200).json({ success: true, message: 'Search history deleted successfully' });
   } catch (error) {
     next(error);
   }

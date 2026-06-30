@@ -8,7 +8,17 @@ export default function MovieSlider({ title, category }) {
   const { contentType } = useContentStore();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
   const sliderRef = useRef(null);
+
+  const updateArrows = () => {
+    if (sliderRef.current) {
+      const { scrollLeft, clientWidth, scrollWidth } = sliderRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft + clientWidth < scrollWidth - 1);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,6 +37,22 @@ export default function MovieSlider({ title, category }) {
 
     fetchData();
   }, [contentType, category]);
+
+  useEffect(() => {
+    if (list.length > 0) {
+      const handle = setTimeout(() => {
+        updateArrows();
+      }, 100);
+      return () => clearTimeout(handle);
+    }
+  }, [list]);
+
+  useEffect(() => {
+    window.addEventListener('resize', updateArrows);
+    return () => {
+      window.removeEventListener('resize', updateArrows);
+    };
+  }, []);
 
   const scroll = (direction) => {
     if (sliderRef.current) {
@@ -75,7 +101,7 @@ export default function MovieSlider({ title, category }) {
       {/* Left button */}
       <button
         onClick={() => scroll('left')}
-        className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-10 bg-black/60 hover:bg-black/85 text-white p-2 rounded-full hidden group-hover/slider:flex items-center justify-center transition-all duration-300 border border-zinc-800"
+        className={`absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-30 bg-black/60 hover:bg-black/85 hover:scale-110 text-white p-3 rounded-full flex items-center justify-center transition-all duration-300 border border-zinc-800 opacity-0 pointer-events-none ${showLeftArrow ? 'group-hover/slider:opacity-100 group-hover/slider:pointer-events-auto' : ''}`}
       >
         <FaChevronLeft size={20} />
       </button>
@@ -83,6 +109,7 @@ export default function MovieSlider({ title, category }) {
       {/* Slider Container */}
       <div
         ref={sliderRef}
+        onScroll={updateArrows}
         className="flex gap-4 overflow-x-auto scrollbar-none py-4 scroll-smooth"
         style={{
           scrollbarWidth: 'none',
@@ -129,7 +156,7 @@ export default function MovieSlider({ title, category }) {
       {/* Right button */}
       <button
         onClick={() => scroll('right')}
-        className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-10 bg-black/60 hover:bg-black/85 text-white p-2 rounded-full hidden group-hover/slider:flex items-center justify-center transition-all duration-300 border border-zinc-800"
+        className={`absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-30 bg-black/60 hover:bg-black/85 hover:scale-110 text-white p-3 rounded-full flex items-center justify-center transition-all duration-300 border border-zinc-800 opacity-0 pointer-events-none ${showRightArrow ? 'group-hover/slider:opacity-100 group-hover/slider:pointer-events-auto' : ''}`}
       >
         <FaChevronRight size={20} />
       </button>

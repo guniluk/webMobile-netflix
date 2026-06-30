@@ -22,7 +22,17 @@ export default function WatchDetail() {
   const [similar, setSimilar] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
   const similarSliderRef = useRef(null);
+
+  const updateSimilarArrows = () => {
+    if (similarSliderRef.current) {
+      const { scrollLeft, clientWidth, scrollWidth } = similarSliderRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft + clientWidth < scrollWidth - 1);
+    }
+  };
 
   useEffect(() => {
     const fetchWatchData = async () => {
@@ -30,36 +40,24 @@ export default function WatchDetail() {
       setError('');
       try {
         // 1. Fetch details
-        const detailsRes = await axios.get(
-          `/api/v1/${contentType}/${id}/details`,
-        );
+        const detailsRes = await axios.get(`/api/v1/${contentType}/${id}/details`);
         if (detailsRes.data.success) {
           setDetails(detailsRes.data.content);
         }
 
         // 2. Fetch trailers
-        const trailersRes = await axios.get(
-          `/api/v1/${contentType}/${id}/trailers`,
-        );
+        const trailersRes = await axios.get(`/api/v1/${contentType}/${id}/trailers`);
         if (trailersRes.data.success) {
           // Filter only YouTube trailers
           const ytTrailers = (trailersRes.data.trailers || []).filter(
-            (v) =>
-              v.site === 'YouTube' &&
-              (v.type === 'Trailer' || v.type === 'Teaser'),
+            (v) => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')
           );
-          setTrailers(
-            ytTrailers.length > 0
-              ? ytTrailers
-              : trailersRes.data.trailers || [],
-          );
+          setTrailers(ytTrailers.length > 0 ? ytTrailers : trailersRes.data.trailers || []);
           setCurrentTrailerIdx(0);
         }
 
         // 3. Fetch similar items
-        const similarRes = await axios.get(
-          `/api/v1/${contentType}/${id}/similar`,
-        );
+        const similarRes = await axios.get(`/api/v1/${contentType}/${id}/similar`);
         if (similarRes.data.success) {
           setSimilar(similarRes.data.similar || []);
         }
@@ -77,6 +75,22 @@ export default function WatchDetail() {
     fetchWatchData();
   }, [id, contentType]);
 
+  useEffect(() => {
+    if (similar.length > 0) {
+      const handle = setTimeout(() => {
+        updateSimilarArrows();
+      }, 100);
+      return () => clearTimeout(handle);
+    }
+  }, [similar]);
+
+  useEffect(() => {
+    window.addEventListener('resize', updateSimilarArrows);
+    return () => {
+      window.removeEventListener('resize', updateSimilarArrows);
+    };
+  }, []);
+
   const handleNextTrailer = () => {
     if (currentTrailerIdx < trailers.length - 1) {
       setCurrentTrailerIdx((prev) => prev + 1);
@@ -92,10 +106,7 @@ export default function WatchDetail() {
   const scrollSimilar = (direction) => {
     if (similarSliderRef.current) {
       const { scrollLeft, clientWidth } = similarSliderRef.current;
-      const scrollTo =
-        direction === 'left'
-          ? scrollLeft - clientWidth
-          : scrollLeft + clientWidth;
+      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
       similarSliderRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   };
@@ -117,13 +128,8 @@ export default function WatchDetail() {
       <div className="min-h-screen bg-[#141414] text-white flex flex-col">
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center gap-4 px-4 text-center">
-          <h2 className="text-3xl font-bold text-zinc-400">
-            {error || 'Something went wrong.'}
-          </h2>
-          <Link
-            to="/"
-            className="btn btn-error bg-red-600 hover:bg-red-700 text-white font-bold"
-          >
+          <h2 className="text-3xl font-bold text-zinc-400">{error || 'Something went wrong.'}</h2>
+          <Link to="/" className="btn btn-error bg-red-600 hover:bg-red-700 text-white font-bold">
             Go Back Home
           </Link>
         </div>
@@ -133,9 +139,7 @@ export default function WatchDetail() {
   }
 
   const hasTrailer = trailers.length > 0 && trailers[currentTrailerIdx]?.key;
-  const releaseYear =
-    details.release_date?.split('-')[0] ||
-    details.first_air_date?.split('-')[0];
+  const releaseYear = details.release_date?.split('-')[0] || details.first_air_date?.split('-')[0];
 
   return (
     <div className="min-h-screen bg-[#141414] text-white flex flex-col pb-20">
@@ -212,7 +216,7 @@ export default function WatchDetail() {
                   : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO0F7e0AAAAASUVORK5CYII='
               }
               alt={details.title || details.name}
-              className="w-full max-w-[200px] sm:max-w-[280px] md:max-w-[320px] rounded-lg shadow-xl border border-zinc-800 object-cover"
+              className="w-full max-w-50 sm:max-w-70 md:max-w-[320px] rounded-lg shadow-xl border border-zinc-800 object-cover"
             />
           </div>
 
@@ -250,9 +254,7 @@ export default function WatchDetail() {
 
             {/* Overview / Storyline */}
             <div>
-              <h3 className="font-bold text-base sm:text-lg mb-2 text-zinc-200">
-                Overview
-              </h3>
+              <h3 className="font-bold text-base sm:text-lg mb-2 text-zinc-200">Overview</h3>
               <p className="text-zinc-300 leading-relaxed text-xs sm:text-sm md:text-base">
                 {details.overview || 'No storyline summary available.'}
               </p>
@@ -270,7 +272,7 @@ export default function WatchDetail() {
             {/* Slider navigation buttons */}
             <button
               onClick={() => scrollSimilar('left')}
-              className="absolute left-0 top-[60%] -translate-y-1/2 z-10 bg-black/60 hover:bg-black/85 text-white p-2 rounded-full hidden group-hover/similar:flex items-center justify-center border border-zinc-800 transition-all duration-300"
+              className={`absolute left-0 top-[60%] -translate-y-1/2 z-30 bg-black/60 hover:bg-black/85 hover:scale-110 text-white p-3 rounded-full flex items-center justify-center border border-zinc-800 transition-all duration-300 opacity-0 pointer-events-none ${showLeftArrow ? 'group-hover/similar:opacity-100 group-hover/similar:pointer-events-auto' : ''}`}
             >
               <FaChevronLeft size={18} />
             </button>
@@ -278,6 +280,7 @@ export default function WatchDetail() {
             {/* Similar Movies Slider */}
             <div
               ref={similarSliderRef}
+              onScroll={updateSimilarArrows}
               className="flex gap-4 overflow-x-auto scrollbar-none py-4 scroll-smooth"
               style={{
                 scrollbarWidth: 'none',
@@ -295,7 +298,7 @@ export default function WatchDetail() {
                   <Link
                     key={item.id}
                     to={`/watch/${item.id}`}
-                    className="min-w-[140px] sm:min-w-[190px] md:min-w-[260px] relative rounded-md overflow-hidden transition-all duration-300 hover:scale-105 shadow-md group"
+                    className="min-w-35 sm:min-w-47.5 md:min-w-65 relative rounded-md overflow-hidden transition-all duration-300 hover:scale-105 shadow-md group"
                   >
                     <img
                       src={imgUrl}
@@ -315,7 +318,7 @@ export default function WatchDetail() {
 
             <button
               onClick={() => scrollSimilar('right')}
-              className="absolute right-0 top-[60%] -translate-y-1/2 z-10 bg-black/60 hover:bg-black/85 text-white p-2 rounded-full hidden group-hover/similar:flex items-center justify-center border border-zinc-800 transition-all duration-300"
+              className={`absolute right-0 top-[60%] -translate-y-1/2 z-30 bg-black/60 hover:bg-black/85 hover:scale-110 text-white p-3 rounded-full flex items-center justify-center border border-zinc-800 transition-all duration-300 opacity-0 pointer-events-none ${showRightArrow ? 'group-hover/similar:opacity-100 group-hover/similar:pointer-events-auto' : ''}`}
             >
               <FaChevronRight size={18} />
             </button>
