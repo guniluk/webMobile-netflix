@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../../store/api';
 import { useContentStore } from '../../store/contentStore';
+import { useSearchStore } from '../../store/searchStore';
 import Avatar from '../../components/Avatar';
 
 interface SearchResultItem {
@@ -31,11 +32,7 @@ const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 48) / 3; // 3 columns grid with padding
 
 export default function Search() {
-  const [activeTab, setActiveTab] = useState<'movie' | 'tv' | 'person'>(
-    'movie',
-  );
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResultItem[]>([]);
+  const { activeTab, setActiveTab, query, setQuery, results, setResults } = useSearchStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { setContentType } = useContentStore();
@@ -75,8 +72,20 @@ export default function Search() {
   };
 
   const handleItemPress = (item: SearchResultItem) => {
-    if (activeTab === 'person') return; // Person doesn't have a detail screen in this version
+    if (activeTab === 'person') {
+      const imagePath = item.profile_path;
+      const imageUrl = imagePath
+        ? `https://image.tmdb.org/t/p/w300${imagePath}`
+        : '';
+      setQuery('');
+      router.push({
+        pathname: `/person/${encodeURIComponent(item.name || '')}`,
+        params: { imageUrl: imageUrl }
+      });
+      return;
+    }
     setContentType(activeTab);
+    setQuery('');
     router.push(`/watch/${item.id}`);
   };
 
@@ -90,7 +99,11 @@ export default function Search() {
 
     if (activeTab === 'person') {
       return (
-        <View style={styles.personCard}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => handleItemPress(item)}
+          style={styles.personCard}
+        >
           <Image source={{ uri: imageUrl }} style={styles.personImage} />
           <Text style={styles.personName} numberOfLines={1}>
             {title}
@@ -98,7 +111,7 @@ export default function Search() {
           <Text style={styles.personDept} numberOfLines={1}>
             {item.known_for_department || 'Actor'}
           </Text>
-        </View>
+        </TouchableOpacity>
       );
     }
 
@@ -134,6 +147,7 @@ export default function Search() {
             onPress={() => {
               setActiveTab(tab);
               setResults([]);
+              setQuery('');
               setError('');
             }}
             style={[

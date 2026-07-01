@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/authStore';
+import { useSearchStore } from '../../store/searchStore';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 
 export default function TabsLayout() {
@@ -57,6 +58,11 @@ export default function TabsLayout() {
               color={color}
             />
           ),
+        }}
+        listeners={{
+          tabPress: () => {
+            useSearchStore.getState().clearSearch();
+          },
         }}
       />
       <Tabs.Screen

@@ -5,11 +5,10 @@ import { FaSearch, FaTrash, FaFilm, FaTv, FaUser } from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useContentStore } from '../store/contentStore';
+import { useSearchStore } from '../store/searchStore';
 
 export default function Search() {
-  const [activeTab, setActiveTab] = useState('movie'); // 'movie', 'tv', 'person'
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
+  const { activeTab, setActiveTab, query, setQuery, results, setResults } = useSearchStore();
   const [searchHistory, setSearchHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -71,7 +70,6 @@ export default function Search() {
         setResults(res.data.content || []);
         // Refresh history after a successful search because backend saves it to DB
         fetchHistory();
-        setQuery('');
       }
     } catch (err) {
       if (err.response?.status === 404) {
@@ -114,6 +112,7 @@ export default function Search() {
               onClick={() => {
                 setActiveTab(tab);
                 setResults([]);
+                setQuery('');
                 setError('');
               }}
               className={`btn btn-sm sm:btn-md capitalize font-semibold flex items-center gap-1.5 sm:gap-2 rounded-full border border-zinc-800 transition-all text-xs sm:text-sm ${
@@ -182,7 +181,12 @@ export default function Search() {
                   className="bg-zinc-900/60 rounded-lg overflow-hidden border border-zinc-800/80 shadow-md group"
                 >
                   {activeTab === 'person' ? (
-                    <div className="flex flex-col items-center p-3 sm:p-4">
+                    <Link
+                      to={`/person/profile/${encodeURIComponent(item.name)}`}
+                      state={{ imageUrl }}
+                      onClick={() => setQuery('')}
+                      className="flex flex-col items-center p-3 sm:p-4 cursor-pointer w-full"
+                    >
                       <img
                         src={imageUrl}
                         alt={title}
@@ -194,12 +198,13 @@ export default function Search() {
                       <p className="text-zinc-500 text-[10px] sm:text-xs mt-1 text-center line-clamp-1">
                         {item.known_for_department || 'Actor'}
                       </p>
-                    </div>
+                    </Link>
                   ) : (
                     <Link
                       to={`/watch/${item.id}`}
                       onClick={() => {
                         setContentType(activeTab);
+                        setQuery('');
                       }}
                     >
                       <div className="relative overflow-hidden aspect-2/3">

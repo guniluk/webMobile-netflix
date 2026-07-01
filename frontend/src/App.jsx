@@ -6,6 +6,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Search from './pages/Search';
 import WatchDetail from './pages/WatchDetail';
+import PersonProfile from './pages/PersonProfile';
 
 export default function App() {
   const { user, isCheckingAuth, authCheck } = useAuthStore();
@@ -38,6 +39,10 @@ export default function App() {
           element={user ? <WatchDetail /> : <Navigate to="/login" replace />}
         />
         <Route path="/search" element={user ? <Search /> : <Navigate to="/login" replace />} />
+        <Route
+          path="/person/profile/:name"
+          element={user ? <PersonProfile /> : <Navigate to="/login" replace />}
+        />
 
         {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" replace />} />

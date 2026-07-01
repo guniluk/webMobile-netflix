@@ -157,7 +157,7 @@ export default function WatchDetail() {
         </div>
 
         {/* Trailer Video Player Section */}
-        <div className="w-full aspect-video bg-zinc-950 sm:rounded-lg overflow-hidden border-y sm:border border-zinc-800/80 shadow-2xl relative mb-10 group">
+        <div className="w-full aspect-video bg-zinc-950 sm:rounded-lg overflow-hidden border-y sm:border border-zinc-800/80 shadow-2xl relative mb-25 group">
           {hasTrailer ? (
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${trailers[currentTrailerIdx].key}?autoplay=0`}
@@ -206,7 +206,7 @@ export default function WatchDetail() {
         </div>
 
         {/* Content Info Section */}
-        <div className="px-4 sm:px-0 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-16">
+        <div className="px-4 sm:px-0 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-20 items-center">
           {/* Poster Image */}
           <div className="flex justify-center md:justify-start">
             <img

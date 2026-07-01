@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaSearch, FaSignOutAlt, FaHistory, FaBars } from 'react-icons/fa';
 import { useAuthStore } from '../store/authStore';
 import { useContentStore } from '../store/contentStore';
+import { useSearchStore } from '../store/searchStore';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,6 +45,7 @@ export default function Navbar() {
       <div className="flex items-center gap-8">
         <Link
           to="/"
+          onClick={() => useSearchStore.getState().clearSearch()}
           className="text-red-600 font-extrabold text-2xl md:text-3xl tracking-wider hover:opacity-90 transition-opacity"
         >
           BYH VIDEOS
@@ -54,6 +56,7 @@ export default function Navbar() {
           <button
             onClick={() => {
               setContentType('movie');
+              useSearchStore.getState().clearSearch();
               navigate('/');
             }}
             className={`hover:text-gray-300 transition-colors font-medium cursor-pointer ${
@@ -67,6 +70,7 @@ export default function Navbar() {
           <button
             onClick={() => {
               setContentType('tv');
+              useSearchStore.getState().clearSearch();
               navigate('/');
             }}
             className={`hover:text-gray-300 transition-colors font-medium cursor-pointer ${
@@ -79,6 +83,7 @@ export default function Navbar() {
           </button>
           <Link
             to="/search"
+            onClick={() => useSearchStore.getState().clearSearch()}
             className={`hover:text-gray-300 transition-colors font-medium flex items-center gap-1.5 ${
               location.pathname === '/search'
                 ? 'text-white border-b-2 border-red-600 pb-0.5'
@@ -96,6 +101,7 @@ export default function Navbar() {
           <>
             <Link
               to="/search"
+              onClick={() => useSearchStore.getState().clearSearch()}
               className="text-gray-300 hover:text-white transition-colors p-2"
               title="Search"
             >
@@ -136,7 +142,7 @@ export default function Navbar() {
                   </span>
                 </li>
                 <li>
-                  <Link to="/search" className="py-2 flex items-center gap-2">
+                  <Link to="/search" onClick={() => useSearchStore.getState().clearSearch()} className="py-2 flex items-center gap-2">
                     <FaHistory /> Search History
                   </Link>
                 </li>
@@ -175,6 +181,7 @@ export default function Navbar() {
           <button
             onClick={() => {
               setContentType('movie');
+              useSearchStore.getState().clearSearch();
               setMobileMenuOpen(false);
               navigate('/');
             }}
@@ -189,6 +196,7 @@ export default function Navbar() {
           <button
             onClick={() => {
               setContentType('tv');
+              useSearchStore.getState().clearSearch();
               setMobileMenuOpen(false);
               navigate('/');
             }}
@@ -202,7 +210,10 @@ export default function Navbar() {
           </button>
           <Link
             to="/search"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={() => {
+              useSearchStore.getState().clearSearch();
+              setMobileMenuOpen(false);
+            }}
             className={`text-left py-2 px-4 rounded hover:bg-zinc-900 transition-colors ${
               location.pathname === '/search'
                 ? 'bg-zinc-900 text-white font-semibold'
