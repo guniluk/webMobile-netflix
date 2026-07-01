@@ -32,7 +32,10 @@ interface PersonProfileData {
 }
 
 export default function PersonProfile() {
-  const { name, imageUrl } = useLocalSearchParams<{ name: string; imageUrl?: string }>();
+  const { name, imageUrl } = useLocalSearchParams<{
+    name: string;
+    imageUrl?: string;
+  }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [profile, setProfile] = useState<PersonProfileData | null>(null);
@@ -52,7 +55,7 @@ export default function PersonProfile() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         const data = await res.json();
         if (!res.ok || !data.success) {
@@ -90,7 +93,10 @@ export default function PersonProfile() {
     return (
       <View style={styles.centerContainer}>
         <Text style={styles.errorText}>{error || 'Profile not found.'}</Text>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
           <Text style={styles.backButtonText}>Go Back</Text>
         </TouchableOpacity>
       </View>
@@ -114,67 +120,81 @@ export default function PersonProfile() {
 
       <ScrollView
         style={styles.container}
-        contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16 }]}
+        contentContainerStyle={[
+          styles.contentContainer,
+          { paddingTop: insets.top + 16 },
+        ]}
         showsVerticalScrollIndicator={false}
       >
-      {/* Back Button */}
-      <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={24} color="#ffffff" />
-        <Text style={styles.backRowText}>Back</Text>
-      </TouchableOpacity>
-
-      {/* Profile Card */}
-      <View style={styles.profileCard}>
-        {imageUrl || profile.imageUrl ? (
-          <Image source={{ uri: imageUrl || profile.imageUrl }} style={styles.profileImage} />
-        ) : (
-          <View style={styles.noImage}>
-            <Ionicons name="person" size={50} color="#71717a" />
-            <Text style={styles.noImageText}>No Image</Text>
-          </View>
-        )}
-
-        <Text style={styles.profileName}>{profile.name}</Text>
-
-        <TouchableOpacity
-          style={styles.googleSearchBtn}
-          onPress={() => handleOpenURL(profile.googleSearchUrl)}
-        >
-          <Ionicons name="logo-google" size={16} color="#ffffff" style={styles.googleIcon} />
-          <Text style={styles.googleSearchText}>Search on Google</Text>
+        {/* Back Button */}
+        <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="#ffffff" />
+          <Text style={styles.backRowText}>Back</Text>
         </TouchableOpacity>
 
-        <Text style={styles.abstractText}>{profile.abstract}</Text>
-
-        <View style={styles.sourceRow}>
-          <Text style={styles.sourceLabel}>Source: </Text>
-          <TouchableOpacity onPress={() => handleOpenURL(profile.sourceUrl)}>
-            <Text style={styles.sourceLink}>
-              {profile.source} <Ionicons name="open-outline" size={10} color="#E50914" />
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Google Search Results */}
-      {profile.relatedLinks && profile.relatedLinks.length > 0 && (
-        <View style={styles.resultsContainer}>
-          <View style={styles.resultsHeader}>
-            <Ionicons name="search" size={20} color="#4285F4" />
-            <Text style={styles.resultsTitle}>Google Search Results</Text>
-          </View>
-
-          {profile.relatedLinks.map((link, idx) => (
-            <View key={idx} style={styles.resultItem}>
-              <TouchableOpacity onPress={() => handleOpenURL(link.url)}>
-                <Text style={styles.resultTitle}>{link.title}</Text>
-              </TouchableOpacity>
-              <Text style={styles.resultUrl} numberOfLines={1}>{link.url}</Text>
-              <Text style={styles.resultSnippet}>{link.snippet}</Text>
+        {/* Profile Card */}
+        <View style={styles.profileCard}>
+          {imageUrl || profile.imageUrl ? (
+            <Image
+              source={{ uri: imageUrl || profile.imageUrl || undefined }}
+              style={styles.profileImage}
+            />
+          ) : (
+            <View style={styles.noImage}>
+              <Ionicons name="person" size={50} color="#71717a" />
+              <Text style={styles.noImageText}>No Image</Text>
             </View>
-          ))}
+          )}
+
+          <Text style={styles.profileName}>{profile.name}</Text>
+
+          <TouchableOpacity
+            style={styles.googleSearchBtn}
+            onPress={() => handleOpenURL(profile.googleSearchUrl)}
+          >
+            <Ionicons
+              name="logo-google"
+              size={16}
+              color="#ffffff"
+              style={styles.googleIcon}
+            />
+            <Text style={styles.googleSearchText}>Search on Google</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.abstractText}>{profile.abstract}</Text>
+
+          <View style={styles.sourceRow}>
+            <Text style={styles.sourceLabel}>Source: </Text>
+            <TouchableOpacity onPress={() => handleOpenURL(profile.sourceUrl)}>
+              <Text style={styles.sourceLink}>
+                {profile.source}{' '}
+                <Ionicons name="open-outline" size={10} color="#E50914" />
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      )}
+
+        {/* Google Search Results */}
+        {profile.relatedLinks && profile.relatedLinks.length > 0 && (
+          <View style={styles.resultsContainer}>
+            <View style={styles.resultsHeader}>
+              <Ionicons name="search" size={20} color="#4285F4" />
+              <Text style={styles.resultsTitle}>Google Search Results</Text>
+            </View>
+
+            {profile.relatedLinks.map((link, idx) => (
+              <View key={idx} style={styles.resultItem}>
+                <TouchableOpacity onPress={() => handleOpenURL(link.url)}>
+                  <Text style={styles.resultTitle}>{link.title}</Text>
+                </TouchableOpacity>
+                <Text style={styles.resultUrl} numberOfLines={1}>
+                  {link.url}
+                </Text>
+                <Text style={styles.resultSnippet}>{link.snippet}</Text>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </View>
   );

@@ -32,7 +32,8 @@ const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 48) / 3; // 3 columns grid with padding
 
 export default function Search() {
-  const { activeTab, setActiveTab, query, setQuery, results, setResults } = useSearchStore();
+  const { activeTab, setActiveTab, query, setQuery, results, setResults } =
+    useSearchStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { setContentType } = useContentStore();
@@ -79,14 +80,17 @@ export default function Search() {
         : '';
       setQuery('');
       router.push({
-        pathname: `/person/${encodeURIComponent(item.name || '')}`,
-        params: { imageUrl: imageUrl }
+        pathname: '/person/[name]',
+        params: { name: item.name || '', imageUrl: imageUrl },
       });
       return;
     }
     setContentType(activeTab);
     setQuery('');
-    router.push(`/watch/${item.id}`);
+    router.push({
+      pathname: '/watch/[id]',
+      params: { id: item.id.toString() },
+    });
   };
 
   const renderResultItem = ({ item }: { item: SearchResultItem }) => {

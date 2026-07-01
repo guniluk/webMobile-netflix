@@ -36,25 +36,28 @@ export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 
-  const fetchTrending = useCallback(async (showLoader = true) => {
-    if (showLoader) setLoadingTrending(true);
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const res = await fetch(`${API_URL}/api/v1/${contentType}/trending`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-      if (data.success) {
-        setTrending(data.content || null);
+  const fetchTrending = useCallback(
+    async (showLoader = true) => {
+      if (showLoader) setLoadingTrending(true);
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const res = await fetch(`${API_URL}/api/v1/${contentType}/trending`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data.success) {
+          setTrending(data.content || null);
+        }
+      } catch (error) {
+        console.error('Error fetching trending content:', error);
+      } finally {
+        if (showLoader) setLoadingTrending(false);
       }
-    } catch (error) {
-      console.error('Error fetching trending content:', error);
-    } finally {
-      if (showLoader) setLoadingTrending(false);
-    }
-  }, [contentType]);
+    },
+    [contentType],
+  );
 
   useEffect(() => {
     fetchTrending(true);
@@ -66,8 +69,6 @@ export default function Home() {
     triggerRefresh();
     setRefreshing(false);
   };
-
-
 
   return (
     <View style={styles.container}>
