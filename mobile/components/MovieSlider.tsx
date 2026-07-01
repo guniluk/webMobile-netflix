@@ -28,7 +28,7 @@ interface MovieSliderProps {
 }
 
 export default function MovieSlider({ title, category }: MovieSliderProps) {
-  const { contentType } = useContentStore();
+  const { contentType, refreshTrigger } = useContentStore();
   const [list, setList] = useState<MovieItem[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -58,7 +58,7 @@ export default function MovieSlider({ title, category }: MovieSliderProps) {
     };
 
     fetchData();
-  }, [contentType, category]);
+  }, [contentType, category, refreshTrigger]);
 
   if (loading) {
     return (

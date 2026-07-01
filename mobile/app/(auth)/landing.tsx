@@ -53,12 +53,8 @@ export default function Landing() {
 
             {/* Main Hero Section */}
             <View style={styles.heroSection}>
-              <Text style={styles.mainTitle}>
-                Unlimited movies, TV shows, and more
-              </Text>
-              <Text style={styles.subTitle}>
-                Watch anywhere. Cancel anytime.
-              </Text>
+              <Text style={styles.mainTitle}>Unlimited movies, TV shows, and more</Text>
+              <Text style={styles.subTitle}>Watch anywhere. Cancel anytime.</Text>
               <Text style={styles.description}>
                 Ready to watch? Enter your email to create or restart your membership.
               </Text>
@@ -74,10 +70,7 @@ export default function Landing() {
                   value={email}
                   onChangeText={setEmail}
                 />
-                <TouchableOpacity
-                  onPress={handleGetStarted}
-                  style={styles.getStartedBtn}
-                >
+                <TouchableOpacity onPress={handleGetStarted} style={styles.getStartedBtn}>
                   <Text style={styles.getStartedText}>Get Started {'>'}</Text>
                 </TouchableOpacity>
               </View>
@@ -96,7 +89,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
   },
   container: {
     flex: 1,

@@ -162,6 +162,19 @@ export default function WatchDetail() {
 
   return (
     <View style={styles.container}>
+      {/* StatusBar Spacer to prevent content from overlaying status bar on scroll */}
+      <View
+        style={{
+          height: insets.top,
+          backgroundColor: '#141414',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 30,
+        }}
+      />
+
       {/* Back floating button */}
       <TouchableOpacity
         style={[styles.floatingBack, { top: insets.top + 12 }]}

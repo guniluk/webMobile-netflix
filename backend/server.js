@@ -20,6 +20,7 @@ app.use(express.json()); // to parse json data
 app.use(express.urlencoded({ extended: true })); // to parse url-encoded data
 app.use(cookieParser()); // to parse cookies
 app.use(cors()); // to allow cross-origin requests
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/movie', protectRoute, movieRoutes);

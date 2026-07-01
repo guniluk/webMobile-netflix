@@ -10,6 +10,7 @@ import {
   Linking,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../../store/api';
@@ -33,6 +34,7 @@ interface PersonProfileData {
 export default function PersonProfile() {
   const { name, imageUrl } = useLocalSearchParams<{ name: string; imageUrl?: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [profile, setProfile] = useState<PersonProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -96,7 +98,25 @@ export default function PersonProfile() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+    <View style={styles.container}>
+      {/* StatusBar Spacer to prevent content from overlaying status bar on scroll */}
+      <View
+        style={{
+          height: insets.top,
+          backgroundColor: '#141414',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 30,
+        }}
+      />
+
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 16 }]}
+        showsVerticalScrollIndicator={false}
+      >
       {/* Back Button */}
       <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={24} color="#ffffff" />
@@ -155,7 +175,8 @@ export default function PersonProfile() {
           ))}
         </View>
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 

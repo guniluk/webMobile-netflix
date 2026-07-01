@@ -18,12 +18,9 @@ interface AuthState {
   signup: (
     username: string,
     email: string,
-    password: string,
+    password: string
   ) => Promise<{ success: boolean; message?: string }>;
-  login: (
-    email: string,
-    password: string,
-  ) => Promise<{ success: boolean; message?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<{ success: boolean; message?: string }>;
   authCheck: () => Promise<{ success: boolean; message?: string }>;
 }
@@ -122,7 +119,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isCheckingAuth: true });
     try {
       const token = await AsyncStorage.getItem('token');
-      const savedUserStr = await AsyncStorage.getItem('user');
+      // const savedUserStr = await AsyncStorage.getItem('user');
 
       if (!token) {
         set({ user: null, token: null, isCheckingAuth: false });

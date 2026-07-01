@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,39 +30,44 @@ interface TrendingItem {
 }
 
 export default function Home() {
-  const { contentType, setContentType } = useContentStore();
+  const { contentType, setContentType, triggerRefresh } = useContentStore();
   const [trending, setTrending] = useState<TrendingItem | null>(null);
   const [loadingTrending, setLoadingTrending] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchTrending = async () => {
-      setLoadingTrending(true);
-      try {
-        const token = await AsyncStorage.getItem('token');
-        const res = await fetch(`${API_URL}/api/v1/${contentType}/trending`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        if (data.success) {
-          setTrending(data.content || null);
-        }
-      } catch (error) {
-        console.error('Error fetching trending content:', error);
-      } finally {
-        setLoadingTrending(false);
+  const fetchTrending = useCallback(async (showLoader = true) => {
+    if (showLoader) setLoadingTrending(true);
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const res = await fetch(`${API_URL}/api/v1/${contentType}/trending`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTrending(data.content || null);
       }
-    };
-
-    fetchTrending();
+    } catch (error) {
+      console.error('Error fetching trending content:', error);
+    } finally {
+      if (showLoader) setLoadingTrending(false);
+    }
   }, [contentType]);
 
-  const getReleaseYear = (item: TrendingItem) => {
-    const dateStr = item.release_date || item.first_air_date;
-    return dateStr ? dateStr.split('-')[0] : '';
+  useEffect(() => {
+    fetchTrending(true);
+  }, [fetchTrending]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchTrending(false);
+    triggerRefresh();
+    setRefreshing(false);
   };
+
+
 
   return (
     <View style={styles.container}>
@@ -115,6 +121,14 @@ export default function Home() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#E50914"
+            colors={['#E50914']}
+          />
+        }
       >
         {/* Hero Banner Section */}
         {loadingTrending ? (
@@ -130,20 +144,8 @@ export default function Home() {
           >
             <View style={styles.heroOverlay}>
               <View style={styles.heroMeta}>
-                <Text style={styles.heroTitle}>
+                <Text style={styles.heroTitle} numberOfLines={1}>
                   {trending.title || trending.name}
-                </Text>
-                <View style={styles.heroInfoRow}>
-                  <Text style={styles.heroYearText}>
-                    {getReleaseYear(trending)}
-                  </Text>
-                  <Text style={styles.divider}>|</Text>
-                  <Text style={styles.heroAgeBadge}>
-                    {trending.adult ? '18+' : 'PG-13'}
-                  </Text>
-                </View>
-                <Text style={styles.heroOverview} numberOfLines={3}>
-                  {trending.overview}
                 </Text>
 
                 {/* Hero Actions */}
@@ -152,7 +154,7 @@ export default function Home() {
                     onPress={() => router.push(`/watch/${trending.id}`)}
                     style={styles.playBtn}
                   >
-                    <Ionicons name="play" size={18} color="#000000" />
+                    <Ionicons name="play" size={14} color="#000000" />
                     <Text style={styles.playBtnText}>Play</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -161,7 +163,7 @@ export default function Home() {
                   >
                     <Ionicons
                       name="information-circle-outline"
-                      size={18}
+                      size={14}
                       color="#ffffff"
                     />
                     <Text style={styles.infoBtnText}>Info</Text>
@@ -279,20 +281,23 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(20, 20, 20, 0.4)',
+    backgroundColor: 'rgba(20, 20, 20, 0.3)',
     justifyContent: 'flex-end',
-    padding: 16,
+    padding: 12,
   },
   heroMeta: {
-    backgroundColor: 'rgba(20, 20, 20, 0.8)',
+    backgroundColor: 'rgba(20, 20, 20, 0.5)',
     borderRadius: 8,
-    padding: 12,
-    gap: 8,
+    padding: 10,
+    gap: 6,
+    width: '100%',
+    alignSelf: 'center',
   },
   heroTitle: {
     color: '#ffffff',
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   heroInfoRow: {
     flexDirection: 'row',
@@ -325,37 +330,40 @@ const styles = StyleSheet.create({
   },
   heroActionRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
+    gap: 8,
+    marginTop: 4,
+    justifyContent: 'center',
   },
   playBtn: {
     flex: 1,
+    maxWidth: 110,
     flexDirection: 'row',
     backgroundColor: '#ffffff',
     borderRadius: 4,
-    paddingVertical: 10,
+    paddingVertical: 6,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
   },
   playBtnText: {
     color: '#000000',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   infoBtn: {
     flex: 1,
+    maxWidth: 110,
     flexDirection: 'row',
     backgroundColor: 'rgba(115, 115, 115, 0.6)',
     borderRadius: 4,
-    paddingVertical: 10,
+    paddingVertical: 6,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
   },
   infoBtnText: {
     color: '#ffffff',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   heroEmpty: {

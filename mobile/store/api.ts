@@ -10,7 +10,7 @@ const getBaseUrl = () => {
   }
 
   // Fallback for production or when hostUri is not available
-  return 'http://localhost:5000';
+  return 'http://localhost:3000';
 };
 
 export const API_URL = getBaseUrl();
